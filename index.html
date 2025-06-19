@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUNG Personality Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+
+        .question-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .question {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.02);
+        }
+
+        .option-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .option-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto 0;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results {
+            text-align: center;
+        }
+
+        .personality-type {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .type-name {
+            font-size: 1.8rem;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .dimensions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dimension {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .dimension h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .dimension-bar {
+            background: #e2e8f0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .dimension-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 5px;
+            transition: width 0.8s ease;
+        }
+
+        .dimension-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .description {
+            text-align: left;
+            margin-top: 30px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            margin-top: 20px;
+        }
+
+        .restart-btn:hover {
+            box-shadow: 0 15px 35px rgba(72, 187, 120, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .options {
+                flex-direction: column;
+            }
+            
+            .option {
+                min-width: auto;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .personality-type {
+                font-size: 2.5rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card fade-in" id="main-card">
+            <h1>JUNG Personality Test</h1>
+            <p class="subtitle">Discover Your Psychological Type</p>
+            
+            <div id="intro-screen">
+                <div class="intro">
+                    <p>Based on Carl Jung's theory of psychological types, this assessment explores your preferences across four key dimensions that shape how you perceive and interact with the world.</p>
+                    <p style="margin-top: 15px;">Answer honestly based on your natural tendencies, not how you think you should be.</p>
+                </div>
+                <button class="btn" onclick="startTest()">Begin Test</button>
+            </div>
+
+            <div id="test-screen" style="display: none;">
+                <div class="progress-text">
+                    <span id="progress-text">Question 1 of 72</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                </div>
+
+                <div class="question-card fade-in" id="question-card">
+                    <div class="question" id="question-text"></div>
+                    <div class="options" id="options-container"></div>
+                </div>
+
+                <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+
+            <div id="results-screen" style="display: none;" class="results">
+                <div class="personality-type" id="personality-type"></div>
+                <div class="type-name" id="type-name"></div>
+                
+                <div class="dimensions" id="dimensions-display"></div>
+                
+                <div class="description" id="description"></div>
+                
+                <button class="btn restart-btn" onclick="restartTest()">Take Test Again</button>
+				<div class="disclaimer">
+    <h3>Disclaimer</h3>
+    <p>The content on this webpage, including the JUNG Personality Test titled “Discover Your Psychological Type”, is intended for informational purposes only. The results generated may not be accurate or reflective of your actual psychological profile. This tool is not a substitute for a formal psychometric evaluation. For a comprehensive assessment or mental health guidance, please consult a qualified professional.</p>
+    <p style="margin-top: 10px;">This script was generated with the help of AI tools. It is released under the Creative Commons Zero (CC0) license—you are free to use, share, or enhance it without attribution. If you have suggestions or feedback, feel free to reach out to: <a href="mailto:kasyap.p@gmail.com" style="color: #667eea; text-decoration: none;">kasyap.p@gmail.com</a>.</p>
+</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Extraversion vs Introversion (EI) - 18 questions
+            {
+                text: "At a party, you typically:",
+                options: [
+                    { text: "Seek out new people to meet and engage with many conversations.", value: "E", desc: "Enjoy meeting and connecting with many people, energized by social interaction." },
+                    { text: "Stick with a few close friends, preferring deeper conversations.", value: "I", desc: "Prefer deeper conversations with familiar people, finding large groups draining." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "When making decisions, you:",
+                options: [
+                    { text: "Think out loud and discuss with others to explore ideas.", value: "E", desc: "Process thoughts externally through conversation and immediate feedback." },
+                    { text: "Reflect privately before sharing your conclusions.", value: "I", desc: "Need quiet time to think things through and formulate your thoughts internally." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "Your ideal weekend involves:",
+                options: [
+                    { text: "Multiple social activities and events with diverse groups.", value: "E", desc: "Being active and engaged with people, seeking external stimulation." },
+                    { text: "Quiet time for personal interests, recharging through solitude.", value: "I", desc: "Recharging through solitude and reflection, valuing deep personal engagement." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "In meetings, you tend to:",
+                options: [
+                    { text: "Share ideas as they come to you, contributing frequently.", value: "E", desc: "Comfortable thinking and speaking simultaneously, enjoying dynamic discussions." },
+                    { text: "Listen first, then contribute after carefully considering your thoughts.", value: "I", desc: "Prefer to process information internally before speaking, offering well-thought-out contributions." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "You gain energy from:",
+                options: [
+                    { text: "Being around other people and engaging in external activities.", value: "E", desc: "Social interaction and outward focus energizes you." },
+                    { text: "Having time alone to reflect and pursue individual interests.", value: "I", desc: "Solitude and introspection help you recharge your internal battery." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "When learning something new, you prefer to:",
+                options: [
+                    { text: "Discuss it with others immediately, talking through concepts.", value: "E", desc: "External processing and dialogue help solidify understanding." },
+                    { text: "Study and understand it privately first, then discuss if needed.", value: "I", desc: "Internal reflection and quiet study deepen comprehension." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "At work, you're more likely to:",
+                options: [
+                    { text: "Collaborate openly in shared spaces, seeking interaction.", value: "E", desc: "Thrive in interactive, dynamic work environments with team discussions." },
+                    { text: "Work independently when possible, minimizing distractions.", value: "I", desc: "Focus better with minimal distractions, preferring autonomous tasks." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "Your social circle is:",
+                options: [
+                    { text: "Large and diverse, with many acquaintances and friends.", value: "E", desc: "Enjoy maintaining many relationships and broad social connections." },
+                    { text: "Small but very close, with deep bonds.", value: "I", desc: "Prefer depth over breadth in relationships, valuing intimate connections." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "When stressed, you:",
+                options: [
+                    { text: "Seek support from friends and talk through problems.", value: "E", desc: "Talk through problems with others to gain perspective and relief." },
+                    { text: "Withdraw to process alone and find your own solutions.", value: "I", desc: "Need space to work through issues internally and regain composure." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "You communicate best through:",
+                options: [
+                    { text: "Speaking and verbal interaction, enjoying live discussions.", value: "E", desc: "Express yourself naturally through talking, preferring direct conversation." },
+                    { text: "Writing and careful consideration, crafting precise messages.", value: "I", desc: "Prefer written communication for complex topics, allowing for thought and revision." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "When meeting new people, you:",
+                options: [
+                    { text: "Initiate conversations easily and enjoy making connections.", value: "E", desc: "Comfortable striking up conversations and engaging with strangers." },
+                    { text: "Wait for others to approach you or join existing groups.", value: "I", desc: "Prefer to observe and feel out a situation before engaging." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "You prefer leisure activities that are:",
+                options: [
+                    { text: "Energetic and involve many people (e.g., sports, parties).", value: "E", desc: "Seek out stimulating activities that involve social interaction." },
+                    { text: "Calm and allow for personal reflection (e.g., reading, hobbies).", value: "I", desc: "Enjoy quiet pursuits that allow for internal focus and personal growth." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "In a group project, you typically:",
+                options: [
+                    { text: "Take the lead in discussions and organize tasks.", value: "E", desc: "Naturally step into leadership and facilitate group interaction." },
+                    { text: "Contribute ideas after listening and analyze other perspectives.", value: "I", desc: "Prefer to support the group by analyzing and refining ideas behind the scenes." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "Your natural pace is more:",
+                options: [
+                    { text: "Fast-paced and action-oriented, eager to jump in.", value: "E", desc: "Prefer to act quickly and learn by doing." },
+                    { text: "Deliberate and reflective, taking time to consider.", value: "I", desc: "Prefer to think before acting, considering all implications." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "When facing a challenge, you are more likely to:",
+                options: [
+                    { text: "Gather input from many sources and brainstorm with others.", value: "E", desc: "Seek external perspectives and collaborative solutions." },
+                    { text: "Think deeply about it on your own before seeking input.", value: "I", desc: "Prefer solitary contemplation to solve complex problems." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "You find extended social interactions:",
+                options: [
+                    { text: "Invigorating and stimulating.", value: "E", desc: "Feel energized and excited by prolonged social engagement." },
+                    { text: "Draining and requiring recovery time.", value: "I", desc: "Find long social periods tiring and need time alone to recover." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "When you receive exciting news, you usually:",
+                options: [
+                    { text: "Immediately tell everyone you know.", value: "E", desc: "Share news outwardly to amplify your excitement." },
+                    { text: "Process it internally first before sharing with a select few.", value: "I", desc: "Prefer to savor the news privately before deciding who to share it with." }
+                ],
+                dimension: "EI"
+            },
+            {
+                text: "You are generally perceived by others as:",
+                options: [
+                    { text: "Outgoing and approachable.", value: "E", desc: "Seen as sociable and easy to engage with." },
+                    { text: "Reserved and thoughtful.", value: "I", desc: "Perceived as quiet and introspective." }
+                ],
+                dimension: "EI"
+            },
+
+            // Sensing vs Intuition (SN) - 18 questions
+            {
+                text: "When learning, you prefer:",
+                options: [
+                    { text: "Concrete examples and hands-on practice, focusing on details.", value: "S", desc: "Learn best through practical application and tangible data." },
+                    { text: "Theoretical concepts and possibilities, exploring underlying patterns.", value: "N", desc: "Enjoy exploring ideas and connections, seeing the big picture and future implications." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You're more interested in:",
+                options: [
+                    { text: "What is actually happening now and observable facts.", value: "S", desc: "Focus on present realities and practical details, valuing accuracy." },
+                    { text: "What could happen in the future and abstract theories.", value: "N", desc: "Fascinated by potential, possibilities, and theoretical insights." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "When giving directions, you:",
+                options: [
+                    { text: "Provide specific landmarks and step-by-step details.", value: "S", desc: "Give concrete, sequential instructions to avoid confusion." },
+                    { text: "Describe the general area and conceptual flow of the journey.", value: "N", desc: "Provide overall direction and big picture, assuming others can fill in details." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You trust:",
+                options: [
+                    { text: "Experience and proven methods that have worked before.", value: "S", desc: "Rely on what is known and reliable from past data." },
+                    { text: "Inspiration and new possibilities, trusting your gut feelings.", value: "N", desc: "Open to innovative approaches and new insights." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "In conversations, you tend to:",
+                options: [
+                    { text: "Focus on facts, specific details, and past experiences.", value: "S", desc: "Share concrete information and practical examples." },
+                    { text: "Explore ideas, implications, and future possibilities.", value: "N", desc: "Discuss concepts, theories, and abstract meanings." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You're more drawn to:",
+                options: [
+                    { text: "Practical, useful skills with immediate applications.", value: "S", desc: "Value abilities that have clear, tangible benefits." },
+                    { text: "Theoretical, conceptual knowledge and abstract understanding.", value: "N", desc: "Interested in understanding underlying principles and complex systems." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "When reading, you prefer:",
+                options: [
+                    { text: "Step-by-step instructions and practical guides.", value: "S", desc: "Clear, sequential information that is directly applicable." },
+                    { text: "Overview of concepts first and imaginative stories.", value: "N", desc: "Big picture before details, and narratives that spark imagination." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You notice:",
+                options: [
+                    { text: "Details and specifics in your immediate environment.", value: "S", desc: "Aware of immediate sensory information and tangible elements." },
+                    { text: "Patterns and connections between things, seeing underlying meanings.", value: "N", desc: "See relationships and possibilities beyond what is directly observed." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "Your approach to problems is:",
+                options: [
+                    { text: "Break it down into manageable, concrete steps.", value: "S", desc: "Methodical and systematic approach, focusing on what's real." },
+                    { text: "Look for creative, innovative solutions and future implications.", value: "N", desc: "Seek novel approaches and alternatives, thinking outside the box." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You value:",
+                options: [
+                    { text: "Accuracy, attention to detail, and established facts.", value: "S", desc: "Precision and thoroughness, relying on verifiable information." },
+                    { text: "Innovation, original thinking, and new perspectives.", value: "N", desc: "Creativity and exploring possibilities, even if unconventional." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "When describing an event, you focus on:",
+                options: [
+                    { text: "The sequence of events and exact details as they happened.", value: "S", desc: "Relate precise facts and chronological order." },
+                    { text: "The impressions, interpretations, and overall meaning.", value: "N", desc: "Convey the atmosphere, possibilities, and underlying significance." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "Your memory is best for:",
+                options: [
+                    { text: "Specific facts, names, dates, and practical details.", value: "S", desc: "Excel at recalling concrete information and past experiences." },
+                    { text: "Patterns, theories, general concepts, and future visions.", value: "N", desc: "Better at remembering connections, themes, and abstract ideas." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "When building something, you prefer to:",
+                options: [
+                    { text: "Follow the instructions precisely, step by step.", value: "S", desc: "Adhere to established procedures for predictable results." },
+                    { text: "Improvise and adapt, seeing how parts fit together as you go.", value: "N", desc: "Experiment and discover new ways, enjoying the process of creation." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You are generally more aware of:",
+                options: [
+                    { text: "Physical realities and the tangible world around you.", value: "S", desc: "Perceive the world through your five senses, focusing on what is real." },
+                    { text: "Abstract ideas and the invisible connections between things.", value: "N", desc: "See beyond the surface, grasping underlying meanings and possibilities." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "When describing a person, you tend to mention:",
+                options: [
+                    { text: "Their appearance, actions, and concrete achievements.", value: "S", desc: "Focus on observable traits and verifiable accomplishments." },
+                    { text: "Their motivations, potential, and overall personality type.", value: "N", desc: "Describe their inner qualities, aspirations, and what they could become." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "You find routine tasks:",
+                options: [
+                    { text: "Comforting and efficient, allowing for mastery.", value: "S", desc: "Appreciate predictability and the opportunity to hone skills." },
+                    { text: "Boring and repetitive, preferring novelty.", value: "N", desc: "Seek new challenges and possibilities, easily bored by repetition." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "When experiencing art, you look for:",
+                options: [
+                    { text: "The technique, composition, and realistic portrayal.", value: "S", desc: "Appreciate the craft and fidelity to reality." },
+                    { text: "The symbolism, deeper meaning, and emotional impact.", value: "N", desc: "Seek hidden messages and abstract interpretations." }
+                ],
+                dimension: "SN"
+            },
+            {
+                text: "Your ideal gift is:",
+                options: [
+                    { text: "Something practical and immediately useful.", value: "S", desc: "Value gifts that solve a problem or fulfill a need." },
+                    { text: "Something unique and thought-provoking, perhaps symbolic.", value: "N", desc: "Prefer gifts that spark imagination or have a deeper personal meaning." }
+                ],
+                dimension: "SN"
+            },
+
+            // Thinking vs Feeling (TF) - 18 questions
+            {
+                text: "When making decisions, you prioritize:",
+                options: [
+                    { text: "Logic, objective analysis, and consistent principles.", value: "T", desc: "Base decisions on rational evaluation and impersonal criteria." },
+                    { text: "Values, impact on people, and harmony in relationships.", value: "F", desc: "Consider human elements, empathy, and maintaining positive connections." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You're more convinced by:",
+                options: [
+                    { text: "Logical arguments, data, and objective evidence.", value: "T", desc: "Data and reasoning persuade you, seeking truth and accuracy." },
+                    { text: "Personal testimonials, values, and how it affects individuals.", value: "F", desc: "Stories, personal impact, and ethical considerations matter more." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "When giving feedback, you:",
+                options: [
+                    { text: "Focus on what needs improvement, being direct and clear.", value: "T", desc: "Direct about issues and solutions, prioritizing objective improvement." },
+                    { text: "Consider how the person will feel, framing it sensitively.", value: "F", desc: "Sensitive to emotional impact, aiming to encourage and build up." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "In conflicts, you tend to:",
+                options: [
+                    { text: "Analyze the facts objectively to find a fair solution.", value: "T", desc: "Step back and examine logically, seeking impartial resolution." },
+                    { text: "Consider everyone's feelings and seek reconciliation.", value: "F", desc: "Focus on maintaining relationships and emotional well-being." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You're more likely to:",
+                options: [
+                    { text: "Critique ideas to improve them, even if it means being blunt.", value: "T", desc: "Question and analyze for betterment, striving for optimal solutions." },
+                    { text: "Support and encourage others, fostering a positive atmosphere.", value: "F", desc: "Build confidence and morale, prioritizing group cohesion." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "Your strength lies in:",
+                options: [
+                    { text: "Analyzing problems systematically and finding logical flaws.", value: "T", desc: "Logical problem-solving abilities and objective assessment." },
+                    { text: "Understanding people's motivations and building rapport.", value: "F", desc: "Empathy, interpersonal insight, and fostering harmonious relationships." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "When upset, you prefer others to:",
+                options: [
+                    { text: "Give you space to think it through and find a solution.", value: "T", desc: "Process emotions privately and approach problems rationally." },
+                    { text: "Offer emotional support and understanding, a listening ear.", value: "F", desc: "Seek comfort and empathy, valuing emotional connection." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You value being seen as:",
+                options: [
+                    { text: "Competent, logical, and fair.", value: "T", desc: "Respected for your reasoning ability and intellectual honesty." },
+                    { text: "Caring, considerate, and compassionate.", value: "F", desc: "Appreciated for your compassion and ability to connect with others." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "In group settings, you're more likely to:",
+                options: [
+                    { text: "Challenge ideas to make them better, focusing on efficiency.", value: "T", desc: "Push for the best logical outcome, even if it causes minor friction." },
+                    { text: "Ensure everyone feels included and comfortable.", value: "F", desc: "Maintain group harmony and participation, valuing consensus." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You make better decisions when you:",
+                options: [
+                    { text: "Remove emotions from the equation and focus on facts.", value: "T", desc: "Objective analysis yields clarity and optimal solutions." },
+                    { text: "Consider how it affects everyone involved and their well-being.", value: "F", desc: "Human impact and ethical considerations guide your choices." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "When faced with an ethical dilemma, you consider:",
+                options: [
+                    { text: "The principles of right and wrong, and objective rules.", value: "T", desc: "Apply universal rules and logical consistency." },
+                    { text: "The specific circumstances and the welfare of those involved.", value: "F", desc: "Focus on the unique context and the human implications." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You tend to be perceived as:",
+                options: [
+                    { text: "Direct and sometimes critical.", value: "T", desc: "Valued for your honesty and straightforwardness." },
+                    { text: "Diplomatic and compassionate.", value: "F", desc: "Appreciated for your tact and kindness." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "When solving a personal problem, you typically:",
+                options: [
+                    { text: "Analyze the situation dispassionately to find a logical fix.", value: "T", desc: "Seek an objective, data-driven resolution." },
+                    { text: "Explore your feelings and how the problem impacts you and others.", value: "F", desc: "Process emotions and consider relational aspects." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You are more comfortable with:",
+                options: [
+                    { text: "Debates and intellectual challenges.", value: "T", desc: "Enjoy sparring with ideas to sharpen understanding." },
+                    { text: "Conversations that foster connection and understanding.", value: "F", desc: "Prefer discussions that build rapport and empathy." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "Your core motivation is often:",
+                options: [
+                    { text: "To achieve competence and mastery.", value: "T", desc: "Driven by a desire for objective excellence." },
+                    { text: "To create harmony and positive relationships.", value: "F", desc: "Motivated by connection and collective well-being." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You naturally look for:",
+                options: [
+                    { text: "Consistency and logical order.", value: "T", desc: "Identify patterns and rational structures." },
+                    { text: "Empathy and common ground.", value: "F", desc: "Seek understanding and mutual respect." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "When managing a team, you focus on:",
+                options: [
+                    { text: "Setting clear objectives and ensuring tasks are completed efficiently.", value: "T", desc: "Prioritize productivity and logical task flow." },
+                    { text: "Fostering a positive team environment and supporting individual growth.", value: "F", desc: "Emphasize morale, collaboration, and personal development." }
+                ],
+                dimension: "TF"
+            },
+            {
+                text: "You often find yourself correcting:",
+                options: [
+                    { text: "Logical inconsistencies or factual errors.", value: "T", desc: "Driven by a need for accuracy and truth." },
+                    { text: "Misunderstandings or insensitivities in communication.", value: "F", desc: "Motivated to ensure harmonious and empathetic interactions." }
+                ],
+                dimension: "TF"
+            },
+
+            // Judging vs Perceiving (JP) - 18 questions
+            {
+                text: "You prefer your day to be:",
+                options: [
+                    { text: "Planned and structured with a clear schedule.", value: "J", desc: "Organized schedule provides security and a sense of control." },
+                    { text: "Flexible and spontaneous, allowing for improvisation.", value: "P", desc: "Open to new opportunities and changes, enjoying adaptability." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Your workspace is typically:",
+                options: [
+                    { text: "Organized and systematically arranged, with everything in its place.", value: "J", desc: "Order and neatness help you maintain focus and efficiency." },
+                    { text: "Flexible with materials easily accessible, organized chaos that works for you.", value: "P", desc: "Comfortable with a more fluid arrangement, prioritizing accessibility over strict order." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "When starting a project, you:",
+                options: [
+                    { text: "Make a detailed plan first, outlining steps and deadlines.", value: "J", desc: "Structure helps ensure success and reduce uncertainty." },
+                    { text: "Jump in and figure it out as you go, adapting along the way.", value: "P", desc: "Enjoy discovering solutions and possibilities during the process." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Deadlines are:",
+                options: [
+                    { text: "Important motivators to stay on track and ensure completion.", value: "J", desc: "Provide necessary structure and urgency, helping you prioritize." },
+                    { text: "Useful but not always realistic, and can be adjusted if needed.", value: "P", desc: "Guidelines that may need adjustment based on new information or opportunities." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "You feel more comfortable when:",
+                options: [
+                    { text: "Decisions are made and settled, bringing closure.", value: "J", desc: "Closure brings peace of mind and allows you to move forward decisively." },
+                    { text: "Options remain open, allowing for flexibility and new insights.", value: "P", desc: "Flexibility allows for better outcomes and the discovery of new possibilities." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Your approach to tasks is to:",
+                options: [
+                    { text: "Work steadily toward completion, checking off items.", value: "J", desc: "Consistent progress and completion of tasks feels satisfying." },
+                    { text: "Work in bursts when motivated, often at the last minute.", value: "P", desc: "Follow your natural energy rhythms, thriving under pressure or inspiration." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "You prefer to:",
+                options: [
+                    { text: "Finish one thing before starting another, focusing deeply.", value: "J", desc: "Sequential completion reduces stress and ensures thoroughness." },
+                    { text: "Keep several projects going simultaneously, enjoying variety.", value: "P", desc: "Variety maintains interest and energy, allowing for multitasking." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Change is:",
+                options: [
+                    { text: "Manageable when planned for and executed systematically.", value: "J", desc: "Preparation and structure make transitions smoother and less disruptive." },
+                    { text: "An exciting opportunity, bringing new experiences.", value: "P", desc: "Brings new possibilities and growth, embracing spontaneity." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Your ideal vacation would be:",
+                options: [
+                    { text: "Well-planned with scheduled activities and reservations.", value: "J", desc: "Structured itinerary maximizes the experience and minimizes uncertainty." },
+                    { text: "Spontaneous with room for discoveries and adapting plans.", value: "P", desc: "Freedom to explore and adapt, enjoying unforeseen opportunities." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "You feel most satisfied when:",
+                options: [
+                    { text: "Tasks are completed on schedule and goals are met.", value: "J", desc: "Achievement of planned goals and a sense of accomplishment." },
+                    { text: "You've explored multiple possibilities and kept your options open.", value: "P", desc: "Discovery of new options and ideas, valuing the process over strict completion." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "When preparing for an event, you:",
+                options: [
+                    { text: "Plan all the details well in advance.", value: "J", desc: "Prefer to have everything organized and decided beforehand." },
+                    { text: "Handle details as they arise, often close to the event.", value: "P", desc: "Are comfortable with last-minute adjustments and less rigid planning." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Your calendar is typically:",
+                options: [
+                    { text: "Filled with appointments and commitments.", value: "J", desc: "Prefer a structured schedule to manage time effectively." },
+                    { text: "Relatively open, with flexibility for spontaneous activities.", value: "P", desc: "Value freedom and the ability to choose what to do in the moment." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "When making a purchase, you tend to:",
+                options: [
+                    { text: "Research thoroughly and make a definitive choice.", value: "J", desc: "Prefer to make informed decisions and stick to them." },
+                    { text: "Keep looking for better options, even after a decision is made.", value: "P", desc: "Enjoy the process of exploring and may change your mind." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Your attitude towards rules is:",
+                options: [
+                    { text: "They provide necessary order and structure.", value: "J", desc: "Believe in upholding rules for efficiency and fairness." },
+                    { text: "They are guidelines that can be bent or adapted if necessary.", value: "P", desc: "Value flexibility and may challenge rules that seem restrictive." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "When working on a deadline, you:",
+                options: [
+                    { text: "Start early and work consistently to meet it.", value: "J", desc: "Prefer to be ahead of schedule and avoid last-minute stress." },
+                    { text: "Often find a surge of energy and focus right before it.", value: "P", desc: "Perform well under pressure and are energized by tight deadlines." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "You approach new situations with:",
+                options: [
+                    { text: "A desire to understand the parameters and make a plan.", value: "J", desc: "Seek clarity and structure to feel comfortable." },
+                    { text: "An open mind, ready to adapt and explore possibilities.", value: "P", desc: "Embrace uncertainty and enjoy discovering things as they unfold." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "Your personal motto might be:",
+                options: [
+                    { text: "'A place for everything, and everything in its place.'", value: "J", desc: "Highlights a preference for order and predictability." },
+                    { text: "'Go with the flow.'", value: "P", desc: "Emphasizes adaptability and openness to change." }
+                ],
+                dimension: "JP"
+            },
+            {
+                text: "When you finish a major task, you immediately:",
+                options: [
+                    { text: "Start planning the next one.", value: "J", desc: "Enjoy moving on to new goals and maintaining momentum." },
+                    { text: "Relax and enjoy the freedom before deciding what's next.", value: "P", desc: "Value unstructured time and freedom from commitment." }
+                ],
+                dimension: "JP"
+            },
+        ];
+
+        const typeDescriptions = {
+            "ENFJ": {
+                name: "The Protagonist",
+                description: "Natural-born leaders, full of passion and charisma. You're driven by a sense of purpose and have an exceptional ability to inspire and motivate others. Your combination of intuition and feeling makes you highly empathetic and able to understand what motivates people. You thrive in environments where you can help others grow and reach their potential."
+            },
+            "ENFP": {
+                name: "The Campaigner",
+                description: "Enthusiastic, creative and sociable free spirits, who can always find a reason to smile. You see life as a big, complex puzzle where everything is connected. Your enthusiasm is contagious and you excel at seeing potential in people and ideas. You value authenticity and are driven by your values and the desire to help others."
+            },
+            "ENTJ": {
+                name: "The Commander",
+                description: "Bold, imaginative and strong-willed leaders, always finding a way or making one. You're naturally organized and decisive, with a talent for long-term planning and strategy. Your combination of intuition and thinking makes you excellent at seeing the big picture and implementing systematic changes. You thrive in leadership roles and complex challenges."
+            },
+            "ENTP": {
+                name: "The Debater",
+                description: "Smart and curious thinkers who cannot resist an intellectual challenge. You love to brainstorm and explore new possibilities, often playing devil's advocate to explore all angles of an idea. Your quick wit and love of novelty make you excellent at generating innovative solutions and inspiring others to think differently."
+            },
+            "ESFJ": {
+                name: "The Consul",
+                description: "Extraordinarily caring, social and popular people, always eager to help. You have a strong sense of duty and are highly attuned to the emotions and needs of others. Your combination of feeling and judging makes you excellent at creating harmony and ensuring everyone feels valued. You thrive in supportive, structured environments."
+            },
+            "ESFP": {
+                name: "The Entertainer",
+                description: "Spontaneous, energetic and enthusiastic people – life is never boring around them. You live in the moment and love to experience new things. Your natural warmth and enthusiasm make others feel comfortable and accepted. You prefer hands-on learning and value personal connections over abstract theories."
+            },
+            "ESTJ": {
+                name: "The Executive",
+                description: "Excellent administrators, unsurpassed at managing things or people. You value tradition, order, and security, and tend to be very loyal and hard-working. Your combination of sensing and thinking makes you practical and systematic in your approach to problems. You excel in organizing people and resources to achieve concrete goals."
+            },
+            "ESTP": {
+                name: "The Entrepreneur",
+                description: "Smart, energetic and very perceptive people, who truly enjoy living on the edge. You're adaptable and resourceful, preferring to learn through direct experience rather than theoretical study. Your natural charisma and ability to think on your feet make you excellent in crisis situations and dynamic environments."
+            },
+            "INFJ": {
+                name: "The Advocate",
+                description: "Quiet and mystical, yet very inspiring and tireless idealists. You have a unique combination of idealism and practicality, allowing you to take concrete steps toward your vision. Your strong intuition helps you understand people and situations deeply. You're driven by your values and a desire to help others reach their potential."
+            },
+            "INFP": {
+                name: "The Mediator",
+                description: "Poetic, kind and altruistic people, always eager to help a good cause. You're guided by your values rather than by logic or tradition. Your rich inner world and strong sense of personal values drive you to seek meaning and authenticity in your life. You excel at understanding people and bringing out their best qualities."
+            },
+            "INTJ": {
+                name: "The Architect",
+                description: "Imaginative and strategic thinkers, with a plan for everything. You have a natural thirst for knowledge and are driven to understand how things works. Your combination of intuition and thinking makes you excellent at seeing patterns and developing long-term strategies. You prefer to work independently on complex problems."
+            },
+            "INTP": {
+                name: "The Thinker",
+                description: "Innovative inventors with an unquenchable thirst for knowledge. You love theoretical and abstract concepts, often spending time in your rich inner world of ideas. Your natural curiosity drives you to understand the underlying principles of everything around you. You value competence and logical consistency above all else."
+            },
+            "ISFJ": {
+                name: "The Protector",
+                description: "Very dedicated and warm protectors, always ready to defend their loved ones. You have a strong sense of duty and are highly observant of others' needs. Your combination of sensing and feeling makes you excellent at providing practical support and emotional care. You thrive in stable, harmonious environments where you can help others."
+            },
+            "ISFP": {
+                name: "The Adventurer",
+                description: "Flexible and charming artists, always ready to explore new possibilities. You have a strong aesthetic sense and deep personal values that guide your decisions. Your gentle nature and desire for harmony make you excellent at understanding and accepting others. You prefer to learn through personal experience and hands-on exploration."
+            },
+            "ISTJ": {
+                name: "The Logistician",
+                description: "Practical and fact-minded, reliable and responsible individuals. You value tradition, loyalty, and hard work, approaching tasks in a systematic and organized manner. Your combination of sensing and thinking makes you excellent at managing details and ensuring quality. You thrive in stable, structured environments with clear expectations."
+            },
+            "ISTP": {
+                name: "The Virtuoso",
+                description: "Bold and practical experimenters, masters of all kinds of tools. You're naturally curious about how things work and enjoy hands-on problem solving. Your combination of thinking and perceiving makes you adaptable and resourceful in crisis situations. You prefer to learn through direct experience and practical application."
+            }
+        };
+
+        let currentQuestionIndex = 0;
+        let answers = { EI: 0, SN: 0, TF: 0, JP: 0 }; // Scores for each dimension
+        let selectedOption = null;
+
+        const introScreen = document.getElementById('intro-screen');
+        const testScreen = document.getElementById('test-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('next-btn');
+        const progressBarFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        const personalityTypeDisplay = document.getElementById('personality-type');
+        const typeNameDisplay = document.getElementById('type-name');
+        const dimensionsDisplay = document.getElementById('dimensions-display');
+        const descriptionDisplay = document.getElementById('description');
+
+        function startTest() {
+            introScreen.style.display = 'none';
+            testScreen.style.display = 'block';
+            currentQuestionIndex = 0;
+            answers = { EI: 0, SN: 0, TF: 0, JP: 0 };
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const question = questions[currentQuestionIndex];
+                questionText.textContent = question.text;
+                optionsContainer.innerHTML = '';
+                selectedOption = null; // Reset selection for the new question
+                nextButton.disabled = true; // Disable next button until an option is selected
+
+                question.options.forEach((option, index) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.classList.add('option');
+                    optionDiv.innerHTML = `
+                        <div class="option-label">${option.text}</div>
+                        <div class="option-desc">${option.desc}</div>
+                    `;
+                    optionDiv.onclick = () => selectOption(optionDiv, option.value, question.dimension);
+                    optionsContainer.appendChild(optionDiv);
+                });
+
+                updateProgressBar();
+                // Add fade-in animation to the question card
+                document.getElementById('question-card').classList.remove('fade-in');
+                void document.getElementById('question-card').offsetWidth; // Trigger reflow
+                document.getElementById('question-card').classList.add('fade-in');
+            } else {
+                showResults();
+            }
+        }
+
+        function selectOption(element, value, dimension) {
+            // Remove 'selected' class from previously selected option
+            if (selectedOption) {
+                selectedOption.classList.remove('selected');
+            }
+            element.classList.add('selected');
+            selectedOption = element; // Store the currently selected option element
+
+            // Temporarily store the choice. It will be added to `answers` in `nextQuestion`
+            // to allow changing choice before moving to the next question.
+            nextButton.dataset.selectedValue = value;
+            nextButton.dataset.selectedDimension = dimension;
+            nextButton.disabled = false; // Enable next button once an option is selected
+        }
+
+        function nextQuestion() {
+            if (selectedOption) {
+                const value = nextButton.dataset.selectedValue;
+                const dimension = nextButton.dataset.selectedDimension;
+
+                answers[dimension] += (value === dimension[0] ? 1 : 0); // Increment for the first letter of the dimension
+
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function updateProgressBar() {
+            const progressPercentage = (currentQuestionIndex / questions.length) * 100;
+            progressBarFill.style.width = `${progressPercentage}%`;
+            progressText.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            if (currentQuestionIndex === questions.length) {
+                progressText.textContent = "Calculating Results...";
+            }
+        }
+
+        function calculateResults() {
+            let result = "";
+            result += answers.EI > (questions.filter(q => q.dimension === "EI").length / 2) ? "E" : "I";
+            result += answers.SN > (questions.filter(q => q.dimension === "SN").length / 2) ? "S" : "N";
+            result += answers.TF > (questions.filter(q => q.dimension === "TF").length / 2) ? "T" : "F";
+            result += answers.JP > (questions.filter(q => q.dimension === "JP").length / 2) ? "J" : "P";
+            return result;
+        }
+
+        function showResults() {
+            testScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            resultsScreen.classList.add('fade-in'); // Apply fade-in to results screen
+
+            const finalType = calculateResults();
+            const typeInfo = typeDescriptions[finalType];
+
+            personalityTypeDisplay.textContent = finalType;
+            typeNameDisplay.textContent = typeInfo.name;
+            descriptionDisplay.textContent = typeInfo.description;
+
+            renderDimensionScores();
+        }
+
+        function renderDimensionScores() {
+            dimensionsDisplay.innerHTML = ''; // Clear previous scores
+
+            const dimensionMap = {
+                "EI": { label: "Extraversion (E) / Introversion (I)", options: ["E", "I"] },
+                "SN": { label: "Sensing (S) / Intuition (N)", options: ["S", "N"] },
+                "TF": { label: "Thinking (T) / Feeling (F)", options: ["T", "F"] },
+                "JP": { label: "Judging (J) / Perceiving (P)", options: ["J", "P"] }
+            };
+
+            for (const dimCode in dimensionMap) {
+                const totalQuestionsInDim = questions.filter(q => q.dimension === dimCode).length;
+                const scoreForDim = answers[dimCode];
+                const percentage = (scoreForDim / totalQuestionsInDim) * 100;
+                const oppositePercentage = 100 - percentage;
+
+                const dimensionDiv = document.createElement('div');
+                dimensionDiv.classList.add('dimension');
+                dimensionDiv.innerHTML = `
+                    <h3>${dimensionMap[dimCode].label}</h3>
+                    <div class="dimension-bar">
+                        <div class="dimension-fill" style="width: ${percentage}%;"></div>
+                    </div>
+                    <div class="dimension-text">
+                        <span>${dimensionMap[dimCode].options[0]}: ${scoreForDim} (${percentage.toFixed(0)}%)</span>
+                        <span>${dimensionMap[dimCode].options[1]}: ${totalQuestionsInDim - scoreForDim} (${oppositePercentage.toFixed(0)}%)</span>
+                    </div>
+                `;
+                dimensionsDisplay.appendChild(dimensionDiv);
+            }
+        }
+
+
+        function restartTest() {
+            resultsScreen.style.display = 'none';
+            introScreen.style.display = 'block';
+            // Reset state
+            currentQuestionIndex = 0;
+            answers = { EI: 0, SN: 0, TF: 0, JP: 0 };
+            selectedOption = null;
+            nextButton.disabled = true;
+            updateProgressBar(); // Reset progress bar text and fill
+        }
+    </script>
+</body>
+</html>
